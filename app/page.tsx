@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
@@ -697,7 +698,7 @@ export default function LaundryYaluApp() {
                 subtitle="Start with your service and get a clear estimate before booking."
               />
 
-              <QuickTrustStrip />
+              <PremiumFeatureStrip />
               <StepProgress step={bookingStep} />
 
               {bookingStep === 1 && (
@@ -1068,6 +1069,122 @@ export default function LaundryYaluApp() {
         </section>
       </div>
     </main>
+  );
+}
+
+function PremiumFeatureStrip() {
+  return (
+    <div className="relative rounded-[2rem] bg-white/95 border border-white shadow-[0_24px_60px_rgba(15,23,42,0.10)] p-4 overflow-hidden">
+      <div className="absolute -right-14 -top-14 h-36 w-36 rounded-full bg-emerald-100/80 blur-2xl animate-pulse" />
+      <div className="absolute -left-12 bottom-0 h-28 w-28 rounded-full bg-amber-100/60 blur-2xl" />
+
+      <div className="relative z-10">
+        <p className="text-slate-400 font-black">Hi there! 👋</p>
+        <h2 className="text-3xl font-black tracking-tight leading-tight mt-1">Fresh clothes, zero hassle.</h2>
+
+        <div className="mt-5 grid grid-cols-3 gap-2">
+          <PremiumFeatureCard
+            title="Pay after confirmation"
+            body="No upfront payment."
+            variant="pay"
+            icon={<PaymentIcon />}
+          />
+          <PremiumFeatureCard
+            title="Friendly WhatsApp support"
+            body="Real person. Real help."
+            variant="chat"
+            icon={<PremiumChatIcon />}
+          />
+          <PremiumFeatureCard
+            title="Live order status"
+            body="Track every step."
+            variant="live"
+            icon={<LivePinIcon />}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PremiumFeatureCard({
+  title,
+  body,
+  icon,
+  variant,
+}: {
+  title: string;
+  body: string;
+  icon: React.ReactNode;
+  variant: "pay" | "chat" | "live";
+}) {
+  const cardStyle =
+    variant === "pay"
+      ? "from-emerald-50 via-white to-white border-emerald-100 text-emerald-700"
+      : variant === "chat"
+      ? "from-lime-50 via-white to-white border-lime-100 text-green-600"
+      : "from-orange-50 via-white to-white border-orange-100 text-orange-500";
+
+  const arrowStyle =
+    variant === "pay"
+      ? "bg-teal-500 text-white"
+      : variant === "chat"
+      ? "bg-lime-400 text-slate-900"
+      : "bg-orange-400 text-white";
+
+  const badge = variant === "live" ? "LIVE" : variant === "pay" ? "✓" : "•••";
+
+  return (
+    <div className={`group relative min-h-[9.4rem] rounded-[1.45rem] border bg-gradient-to-br ${cardStyle} p-3 shadow-sm overflow-hidden transition duration-300 hover:-translate-y-1 hover:shadow-xl active:scale-[0.98]`}>
+      <div className="absolute -right-8 -top-8 h-20 w-20 rounded-full bg-white/80 blur-xl" />
+      <div className="absolute left-0 top-0 h-full w-1/2 bg-gradient-to-r from-white/45 to-transparent opacity-70" />
+
+      <div className="relative z-10 h-full">
+        <div className="flex items-start justify-between gap-1">
+          <div className="h-11 w-11 rounded-[1rem] bg-white/85 shadow-inner border border-white flex items-center justify-center">
+            {icon}
+          </div>
+          <span className={`text-[9px] font-black rounded-full px-2 py-1 ${variant === "live" ? "bg-orange-100 text-orange-600" : "bg-white/70 text-slate-400"}`}>
+            {badge}
+          </span>
+        </div>
+
+        <p className="text-[12px] leading-tight font-black text-slate-950 mt-4">{title}</p>
+        <p className="text-[10px] leading-tight text-slate-500 mt-2">{body}</p>
+
+        <div className={`absolute right-0 bottom-0 h-8 w-8 rounded-full ${arrowStyle} flex items-center justify-center shadow-lg transition duration-300 group-hover:translate-x-1`}>
+          →
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PaymentIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2">
+      <path d="M4 7h16v10H4z" rx="2" />
+      <path d="M4 10h16M7 15h4" strokeLinecap="round" />
+      <path d="M17.5 15.5l1 1 2-2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function PremiumChatIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2">
+      <path d="M21 11.5a8.5 8.5 0 01-12.4 7.6L4 20l.9-4.5A8.5 8.5 0 1121 11.5z" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M9 12h.01M12 12h.01M15 12h.01" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function LivePinIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2">
+      <path d="M12 21s7-4.4 7-11a7 7 0 10-14 0c0 6.6 7 11 7 11z" strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx="12" cy="10" r="2.5" />
+    </svg>
   );
 }
 
