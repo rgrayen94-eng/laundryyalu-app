@@ -1058,14 +1058,16 @@ function HeroHeader() {
           and live order status.
         </p>
 
-        <div className="mt-5 flex flex-wrap gap-2">
-          <span className="rounded-full bg-white/14 border border-white/20 px-3 py-1 text-xs font-bold backdrop-blur">
+        <div className="mt-5 grid grid-cols-2 gap-2 max-w-[21rem]">
+          <span className="rounded-full bg-white/14 border border-white/20 px-4 py-2 text-xs font-black backdrop-blur text-center shadow-sm">
             Transparent Pricing
           </span>
-          <span className="rounded-full bg-white/14 border border-white/20 px-3 py-1 text-xs font-bold backdrop-blur">
+
+          <span className="rounded-full bg-white/14 border border-white/20 px-4 py-2 text-xs font-black backdrop-blur text-center shadow-sm">
             Pickup + Delivery
           </span>
-          <span className="rounded-full bg-white/14 border border-white/20 px-3 py-1 text-xs font-bold backdrop-blur">
+
+          <span className="col-span-2 justify-self-start rounded-full bg-white/14 border border-white/20 px-4 py-2 text-xs font-black backdrop-blur text-center shadow-sm">
             WhatsApp Support
           </span>
         </div>
