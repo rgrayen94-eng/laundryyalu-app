@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { type ReactNode, useEffect, useMemo, useState } from "react";
 import { auth, db } from "./firebase";
 import {
   addDoc,
@@ -230,7 +230,6 @@ export default function LaundryYaluApp() {
           .includes(search);
 
       const matchesStatus = adminStatusFilter === "All" || booking.status === adminStatusFilter;
-
       return matchesSearch && matchesStatus;
     });
   }, [adminBookings, adminSearch, adminStatusFilter]);
@@ -240,11 +239,7 @@ export default function LaundryYaluApp() {
     setIsAdminMode(adminMode);
 
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user?.email === ADMIN_EMAIL) {
-        setAdminUser(user);
-      } else {
-        setAdminUser(null);
-      }
+      setAdminUser(user?.email === ADMIN_EMAIL ? user : null);
     });
 
     return () => unsubscribe();
@@ -404,7 +399,6 @@ export default function LaundryYaluApp() {
         docId: docSnap.id,
         ...(docSnap.data() as Booking),
       }));
-
       setAdminBookings(data);
     } catch (error) {
       console.error(error);
@@ -413,7 +407,6 @@ export default function LaundryYaluApp() {
         docId: docSnap.id,
         ...(docSnap.data() as Booking),
       }));
-
       setAdminBookings(data);
     }
   }
@@ -456,56 +449,12 @@ export default function LaundryYaluApp() {
     }
   }
 
-  const whatsappMessage = encodeURIComponent(
-    "Hi LaundryYalu 👋 I need help with a laundry pickup."
-  );
+  const whatsappMessage = encodeURIComponent("Hi LaundryYalu 👋 I need help with a laundry pickup.");
 
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_top_left,#ecfdf5_0,#f8fafc_34%,#f4f0e8_100%)] text-slate-950">
+    <main className="min-h-screen bg-[radial-gradient(circle_at_top_left,#ecfdf5_0,#f8fafc_36%,#f4f0e8_100%)] text-slate-950">
       <div className="max-w-md mx-auto min-h-screen bg-[#fbfaf7] shadow-[0_30px_90px_rgba(15,23,42,0.22)] overflow-hidden border-x border-white/70">
-        <header className="relative overflow-hidden bg-[linear-gradient(135deg,#06281f_0%,#0f766e_50%,#c49a45_135%)] text-white px-5 pt-8 pb-7 rounded-b-[42px] shadow-2xl">
-          <div className="absolute -right-16 -top-16 h-48 w-48 rounded-full bg-white/10 blur-sm animate-pulse" />
-          <div className="absolute left-5 bottom-0 h-px w-64 bg-gradient-to-r from-transparent via-amber-200/70 to-transparent" />
-          <div className="absolute -left-20 top-24 h-44 w-44 rounded-full bg-emerald-300/15 blur-2xl animate-pulse" />
-
-          <div className="relative z-10">
-            <div className="flex items-center justify-between gap-4">
-              <div>
-                <p className="text-[10px] tracking-[0.36em] uppercase text-emerald-100">
-                  ඔයාගේ Laundry යාලුවා
-                </p>
-                <h1 className="text-5xl font-black mt-2 tracking-tight">LaundryYalu</h1>
-              </div>
-
-              <div className="h-16 w-16 rounded-[1.5rem] bg-white/12 border border-white/20 shadow-xl backdrop-blur flex items-center justify-center text-3xl animate-pulse">
-                ✦
-              </div>
-            </div>
-
-            <p className="text-emerald-50 mt-4 text-[15px] leading-relaxed max-w-sm">
-              Premium laundry pickup with clear pricing, item-based add-ons, pickup estimates,
-              and live order status.
-            </p>
-
-            <div className="mt-5 flex flex-wrap gap-2">
-              <span className="rounded-full bg-white/14 border border-white/20 px-3 py-1 text-xs font-bold backdrop-blur">
-                Transparent Pricing
-              </span>
-              <span className="rounded-full bg-white/14 border border-white/20 px-3 py-1 text-xs font-bold backdrop-blur">
-                Pickup + Delivery
-              </span>
-              <span className="rounded-full bg-white/14 border border-white/20 px-3 py-1 text-xs font-bold backdrop-blur">
-                WhatsApp Support
-              </span>
-            </div>
-
-            <div className="grid grid-cols-3 gap-2 mt-6">
-              <MiniStat label="Secure" value="ID" />
-              <MiniStat label="Free Delivery" value="3K+" />
-              <MiniStat label="Rating" value="4.9" />
-            </div>
-          </div>
-        </header>
+        <HeroHeader />
 
         {!isAdminMode && (
           <nav className="grid grid-cols-4 gap-2 px-4 mt-5">
@@ -586,7 +535,12 @@ export default function LaundryYaluApp() {
               </div>
 
               <div className="bg-white/90 rounded-[2rem] p-4 border border-stone-200 space-y-3 shadow-sm">
-                <Input label="Search Bookings" value={adminSearch} setValue={setAdminSearch} placeholder="Booking ID, phone, name, area" />
+                <Input
+                  label="Search Bookings"
+                  value={adminSearch}
+                  setValue={setAdminSearch}
+                  placeholder="Booking ID, phone, name, area"
+                />
 
                 <label className="block">
                   <span className="text-sm font-black text-slate-700">Filter by Status</span>
@@ -611,7 +565,11 @@ export default function LaundryYaluApp() {
                 )}
 
                 {filteredAdminBookings.map((booking) => (
-                  <button key={booking.docId || booking.id} onClick={() => openAdminBooking(booking)} className="w-full text-left">
+                  <button
+                    key={booking.docId || booking.id}
+                    onClick={() => openAdminBooking(booking)}
+                    className="w-full text-left"
+                  >
                     <BookingCard booking={booking} />
                   </button>
                 ))}
@@ -627,7 +585,10 @@ export default function LaundryYaluApp() {
                       <h2 className="text-2xl font-black">{selectedAdminBooking.id}</h2>
                     </div>
 
-                    <button onClick={() => setSelectedAdminBooking(null)} className="bg-stone-100 rounded-full px-3 py-2 text-xs font-black">
+                    <button
+                      onClick={() => setSelectedAdminBooking(null)}
+                      className="bg-stone-100 rounded-full px-3 py-2 text-xs font-black"
+                    >
                       Close
                     </button>
                   </div>
@@ -692,12 +653,7 @@ export default function LaundryYaluApp() {
 
           {!isAdminMode && activeTab === "book" && (
             <div className="space-y-5">
-              <SectionTitle
-                title="Book a Pickup"
-                subtitle="Start with your service and get a clear estimate before booking."
-              />
-
-              <PremiumFeatureStrip />
+              <IntroFeatureSection />
               <StepProgress step={bookingStep} />
 
               {bookingStep === 1 && (
@@ -709,9 +665,9 @@ export default function LaundryYaluApp() {
                       <button
                         key={item.id}
                         onClick={() => setSelectedService(item.id)}
-                        className={`text-left rounded-[1.5rem] p-4 border transition active:scale-[0.99] ${
+                        className={`text-left rounded-[1.65rem] p-4 border transition active:scale-[0.99] ${
                           selectedService === item.id
-                            ? "bg-emerald-50 border-emerald-600 shadow-[0_16px_40px_rgba(4,120,87,0.13)]"
+                            ? "bg-emerald-50 border-emerald-600 shadow-[0_18px_45px_rgba(4,120,87,0.12)]"
                             : "bg-white/90 border-stone-200 hover:border-emerald-300"
                         }`}
                       >
@@ -775,8 +731,8 @@ export default function LaundryYaluApp() {
                 <div>
                   <SmallHeading title="3. Add Extra Items, If Any" />
                   <p className="text-sm text-slate-500 mt-2 leading-relaxed">
-                    Your selected load already covers normal clothes. Add these only for extra or bulky
-                    items like shirts, trousers, sarees, suits, blankets, or curtains.
+                    Your selected load already covers normal clothes. Add these only for extra or bulky items
+                    like shirts, trousers, sarees, suits, blankets, or curtains.
                   </p>
 
                   <div className="grid grid-cols-2 gap-3 mt-4">
@@ -791,13 +747,9 @@ export default function LaundryYaluApp() {
                         </div>
 
                         <div className="flex items-center justify-between mt-3">
-                          <button onClick={() => changeAddOn(item.id, -1)} className="h-8 w-8 rounded-full bg-stone-100 font-black">
-                            −
-                          </button>
+                          <button onClick={() => changeAddOn(item.id, -1)} className="h-8 w-8 rounded-full bg-stone-100 font-black">−</button>
                           <span className="font-black">{selectedAddOns[item.id] || 0}</span>
-                          <button onClick={() => changeAddOn(item.id, 1)} className="h-8 w-8 rounded-full bg-emerald-700 text-white font-black">
-                            +
-                          </button>
+                          <button onClick={() => changeAddOn(item.id, 1)} className="h-8 w-8 rounded-full bg-emerald-700 text-white font-black">+</button>
                         </div>
 
                         {(selectedAddOns[item.id] || 0) > 0 && (
@@ -856,7 +808,6 @@ export default function LaundryYaluApp() {
                 <div className="space-y-5">
                   <div className="bg-white/90 rounded-[2rem] p-4 border border-stone-200 space-y-3 shadow-sm">
                     <SmallHeading title="5. Customer Details" />
-
                     <Input label="Customer Name" value={customerName} setValue={setCustomerName} placeholder="Example: Gishan" />
                     <Input label="Phone Number" value={phone} setValue={setPhone} placeholder="Example: 0771234567" />
                     <Input label="Pickup Address" value={address} setValue={setAddress} placeholder="Apartment / house / office address" />
@@ -912,23 +863,16 @@ export default function LaundryYaluApp() {
 
                       <div className="mt-4 rounded-2xl bg-white/10 border border-white/15 p-3">
                         <p className="text-xs uppercase tracking-[0.18em] text-amber-100 font-black">Payment Method</p>
-                        <p className="text-sm font-bold mt-1">
-                          Cash on delivery or bank transfer after confirmation.
-                        </p>
-                        <p className="text-xs text-slate-300 mt-1">
-                          No online payment is required to place the booking.
-                        </p>
+                        <p className="text-sm font-bold mt-1">Cash on delivery or bank transfer after confirmation.</p>
+                        <p className="text-xs text-slate-300 mt-1">No online payment is required to place the booking.</p>
                       </div>
 
                       {!qualifiesFreeDelivery && (
-                        <p className="text-xs text-amber-100 mt-3">
-                          Free pickup & delivery available for larger orders.
-                        </p>
+                        <p className="text-xs text-amber-100 mt-3">Free pickup & delivery available for larger orders.</p>
                       )}
 
                       <p className="text-xs text-slate-400 mt-3">
-                        Pricing remains transparent. Adjustments apply only if the actual load size
-                        or delivery zone differs from the original booking.
+                        Pricing remains transparent. Adjustments apply only if the actual load size or delivery zone differs from the original booking.
                       </p>
 
                       <div className="grid grid-cols-2 gap-3 mt-5">
@@ -1071,136 +1015,182 @@ export default function LaundryYaluApp() {
   );
 }
 
-function PremiumFeatureStrip() {
+function HeroHeader() {
   return (
-    <div className="relative rounded-[2rem] bg-white/95 border border-white shadow-[0_24px_60px_rgba(15,23,42,0.10)] p-4 overflow-hidden">
-      <div className="absolute -right-14 -top-14 h-36 w-36 rounded-full bg-emerald-100/80 blur-2xl animate-pulse" />
-      <div className="absolute -left-12 bottom-0 h-28 w-28 rounded-full bg-amber-100/60 blur-2xl" />
+    <header className="relative overflow-hidden bg-[linear-gradient(135deg,#06281f_0%,#0f766e_50%,#c49a45_135%)] text-white px-5 pt-8 pb-7 rounded-b-[42px] shadow-2xl">
+      <div className="absolute -right-16 -top-16 h-48 w-48 rounded-full bg-white/10 blur-sm animate-pulse" />
+      <div className="absolute left-5 bottom-0 h-px w-64 bg-gradient-to-r from-transparent via-amber-200/70 to-transparent" />
+      <div className="absolute -left-20 top-24 h-44 w-44 rounded-full bg-emerald-300/15 blur-2xl animate-pulse" />
 
       <div className="relative z-10">
-        <p className="text-slate-400 font-black">Hi there! 👋</p>
-        <h2 className="text-3xl font-black tracking-tight leading-tight mt-1">Fresh clothes, zero hassle.</h2>
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <p className="text-[10px] tracking-[0.36em] uppercase text-emerald-100">
+              ඔයාගේ Laundry යාලුවා
+            </p>
+            <h1 className="text-5xl font-black mt-2 tracking-tight">LaundryYalu</h1>
+          </div>
 
-        <div className="mt-5 grid grid-cols-3 gap-2">
-          <PremiumFeatureCard
-            title="Pay after confirmation"
-            body="No upfront payment."
-            variant="pay"
-            icon={<PaymentIcon />}
-          />
-          <PremiumFeatureCard
-            title="Friendly WhatsApp support"
-            body="Real person. Real help."
-            variant="chat"
-            icon={<PremiumChatIcon />}
-          />
-          <PremiumFeatureCard
-            title="Live order status"
-            body="Track every step."
-            variant="live"
-            icon={<LivePinIcon />}
-          />
+          <div className="h-16 w-16 rounded-[1.5rem] bg-white/12 border border-white/20 shadow-xl backdrop-blur flex items-center justify-center text-3xl animate-pulse">
+            ✦
+          </div>
+        </div>
+
+        <p className="text-emerald-50 mt-4 text-[15px] leading-relaxed max-w-sm">
+          Premium laundry pickup with clear pricing, item-based add-ons, pickup estimates,
+          and live order status.
+        </p>
+
+        <div className="mt-5 flex flex-wrap gap-2">
+          <span className="rounded-full bg-white/14 border border-white/20 px-3 py-1 text-xs font-bold backdrop-blur">
+            Transparent Pricing
+          </span>
+          <span className="rounded-full bg-white/14 border border-white/20 px-3 py-1 text-xs font-bold backdrop-blur">
+            Pickup + Delivery
+          </span>
+          <span className="rounded-full bg-white/14 border border-white/20 px-3 py-1 text-xs font-bold backdrop-blur">
+            WhatsApp Support
+          </span>
+        </div>
+
+        <div className="grid grid-cols-3 gap-2 mt-6">
+          <MiniStat label="Secure" value="ID" />
+          <MiniStat label="Free Delivery" value="3K+" />
+          <MiniStat label="Rating" value="4.9" />
+        </div>
+      </div>
+    </header>
+  );
+}
+
+function IntroFeatureSection() {
+  return (
+    <div className="relative overflow-hidden rounded-[2.4rem] bg-white border border-white shadow-[0_28px_80px_rgba(15,23,42,0.12)] p-5">
+      <div className="absolute -right-20 -top-20 h-52 w-52 rounded-full bg-emerald-100 blur-3xl" />
+      <div className="absolute -left-16 bottom-12 h-40 w-40 rounded-full bg-amber-100/70 blur-3xl" />
+
+      <div className="relative z-10">
+        <p className="text-slate-400 font-black text-lg">Hi there! 👋</p>
+
+        <h2 className="text-[2.45rem] leading-[1.02] font-black tracking-[-0.05em] mt-2 text-slate-950">
+          Fresh clothes,
+          <br />
+          zero hassle.
+        </h2>
+
+        <div className="mt-6 -mx-5 overflow-x-auto px-5 pb-4">
+          <div className="flex gap-4 w-max">
+            <FeatureCard
+              variant="pay"
+              title="Pay after confirmation"
+              body="No upfront payment. Pay only when your pickup is confirmed."
+            />
+            <FeatureCard
+              variant="chat"
+              title="Friendly WhatsApp support"
+              body="Real person. Real help. We are here for your laundry questions."
+            />
+            <FeatureCard
+              variant="live"
+              title="Live order status"
+              body="Track pickup, washing, ironing, and delivery step by step."
+            />
+          </div>
+        </div>
+
+        <div className="mt-4 relative overflow-hidden rounded-[2rem] bg-[linear-gradient(135deg,#064e3b_0%,#0f766e_58%,#0f3d35_100%)] text-white p-5 shadow-2xl">
+          <div className="absolute -right-10 -bottom-12 h-40 w-40 rounded-full bg-white/10 blur-2xl" />
+          <div className="absolute right-5 top-5 h-16 w-16 rounded-full bg-white/10 border border-white/15 flex items-center justify-center">
+            <span className="text-2xl">→</span>
+          </div>
+
+          <div className="relative z-10 max-w-[15rem]">
+            <p className="text-[10px] font-black uppercase tracking-[0.28em] text-amber-100">
+              Premium Laundry Care
+            </p>
+
+            <h3 className="text-3xl font-black mt-2 tracking-[-0.03em]">
+              Book a Pickup
+            </h3>
+
+            <p className="text-sm text-emerald-50/90 leading-relaxed mt-3">
+              Choose your service, load size, add-ons, and delivery zone to see a clear price.
+            </p>
+          </div>
+
+          <div className="absolute right-5 bottom-3 text-white/80">
+            <LaundryBasketIcon />
+          </div>
         </div>
       </div>
     </div>
   );
 }
 
-function PremiumFeatureCard({
+function FeatureCard({
   title,
   body,
-  icon,
   variant,
 }: {
   title: string;
   body: string;
-  icon: React.ReactNode;
   variant: "pay" | "chat" | "live";
 }) {
-  const cardStyle =
-    variant === "pay"
-      ? "from-emerald-50 via-white to-white border-emerald-100 text-emerald-700"
-      : variant === "chat"
+  const isPay = variant === "pay";
+  const isChat = variant === "chat";
+  const isLive = variant === "live";
+
+  const cardStyle = isPay
+    ? "from-emerald-50 via-white to-white border-emerald-100 text-emerald-700"
+    : isChat
       ? "from-lime-50 via-white to-white border-lime-100 text-green-600"
       : "from-orange-50 via-white to-white border-orange-100 text-orange-500";
 
-  const arrowStyle =
-    variant === "pay"
-      ? "bg-teal-500 text-white"
-      : variant === "chat"
-      ? "bg-lime-400 text-slate-900"
-      : "bg-orange-400 text-white";
+  const iconCircle = isPay
+    ? "bg-gradient-to-br from-emerald-500 to-teal-500"
+    : isChat
+      ? "bg-gradient-to-br from-green-500 to-lime-400"
+      : "bg-gradient-to-br from-orange-400 to-amber-500";
 
-  const badge = variant === "live" ? "LIVE" : variant === "pay" ? "✓" : "•••";
+  const arrowCircle = isPay
+    ? "bg-gradient-to-br from-teal-500 to-emerald-600"
+    : isChat
+      ? "bg-gradient-to-br from-lime-300 to-lime-500 text-slate-950"
+      : "bg-gradient-to-br from-orange-400 to-orange-500";
 
   return (
-    <div className={`group relative min-h-[9.4rem] rounded-[1.45rem] border bg-gradient-to-br ${cardStyle} p-3 shadow-sm overflow-hidden transition duration-300 hover:-translate-y-1 hover:shadow-xl active:scale-[0.98]`}>
-      <div className="absolute -right-8 -top-8 h-20 w-20 rounded-full bg-white/80 blur-xl" />
-      <div className="absolute left-0 top-0 h-full w-1/2 bg-gradient-to-r from-white/45 to-transparent opacity-70" />
+    <div
+      className={`relative w-[15.8rem] min-h-[16.5rem] shrink-0 rounded-[2rem] border bg-gradient-to-br ${cardStyle} p-5 shadow-[0_22px_55px_rgba(15,23,42,0.10)] overflow-hidden active:scale-[0.985] transition`}
+    >
+      <div className="absolute -right-12 -top-12 h-32 w-32 rounded-full bg-white/80 blur-2xl" />
+      <div className="absolute left-4 top-4 h-24 w-24 rounded-full bg-white/55 blur-xl" />
 
-      <div className="relative z-10 h-full">
-        <div className="flex items-start justify-between gap-1">
-          <div className="h-11 w-11 rounded-[1rem] bg-white/85 shadow-inner border border-white flex items-center justify-center">
-            {icon}
+      {isLive && (
+        <div className="absolute right-4 top-4 rounded-full bg-orange-100 text-orange-600 px-3 py-1 text-[10px] font-black">
+          LIVE
+        </div>
+      )}
+
+      <div className="relative z-10">
+        <div className="relative h-20 w-20 rounded-[1.7rem] bg-white/80 border border-white shadow-[0_18px_38px_rgba(15,23,42,0.10)] flex items-center justify-center">
+          <div className={`h-12 w-12 rounded-2xl ${iconCircle} text-white flex items-center justify-center shadow-lg`}>
+            {isPay && <CardIcon />}
+            {isChat && <ChatIcon />}
+            {isLive && <PinIcon />}
           </div>
-          <span className={`text-[9px] font-black rounded-full px-2 py-1 ${variant === "live" ? "bg-orange-100 text-orange-600" : "bg-white/70 text-slate-400"}`}>
-            {badge}
-          </span>
         </div>
 
-        <p className="text-[12px] leading-tight font-black text-slate-950 mt-4">{title}</p>
-        <p className="text-[10px] leading-tight text-slate-500 mt-2">{body}</p>
+        <h3 className="text-[1.25rem] leading-[1.08] font-black tracking-[-0.03em] text-slate-950 mt-7">
+          {title}
+        </h3>
 
-        <div className={`absolute right-0 bottom-0 h-8 w-8 rounded-full ${arrowStyle} flex items-center justify-center shadow-lg transition duration-300 group-hover:translate-x-1`}>
+        <p className="text-sm leading-relaxed text-slate-500 mt-3">
+          {body}
+        </p>
+
+        <div className={`absolute right-0 bottom-0 h-11 w-11 rounded-full ${arrowCircle} text-white flex items-center justify-center text-xl font-black shadow-xl`}>
           →
         </div>
-      </div>
-    </div>
-  );
-}
-
-function PaymentIcon() {
-  return (
-    <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2">
-      <path d="M4 7h16v10H4z" rx="2" />
-      <path d="M4 10h16M7 15h4" strokeLinecap="round" />
-      <path d="M17.5 15.5l1 1 2-2" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
-function PremiumChatIcon() {
-  return (
-    <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2">
-      <path d="M21 11.5a8.5 8.5 0 01-12.4 7.6L4 20l.9-4.5A8.5 8.5 0 1121 11.5z" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M9 12h.01M12 12h.01M15 12h.01" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-function LivePinIcon() {
-  return (
-    <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2">
-      <path d="M12 21s7-4.4 7-11a7 7 0 10-14 0c0 6.6 7 11 7 11z" strokeLinecap="round" strokeLinejoin="round" />
-      <circle cx="12" cy="10" r="2.5" />
-    </svg>
-  );
-}
-
-function QuickTrustStrip() {
-  return (
-    <div className="grid grid-cols-3 gap-2">
-      <div className="rounded-2xl bg-white/90 border border-stone-200 p-3 shadow-sm">
-        <p className="text-lg">💵</p>
-        <p className="text-[11px] font-black text-slate-700 leading-tight mt-1">Pay after confirmation</p>
-      </div>
-      <div className="rounded-2xl bg-white/90 border border-stone-200 p-3 shadow-sm">
-        <p className="text-lg">💬</p>
-        <p className="text-[11px] font-black text-slate-700 leading-tight mt-1">WhatsApp support</p>
-      </div>
-      <div className="rounded-2xl bg-white/90 border border-stone-200 p-3 shadow-sm">
-        <p className="text-lg">📍</p>
-        <p className="text-[11px] font-black text-slate-700 leading-tight mt-1">Live order status</p>
       </div>
     </div>
   );
@@ -1233,10 +1223,11 @@ function HowItWorks() {
 }
 
 function ServiceIcon({ id }: { id: string }) {
-  const icon = id === "wash-fold" ? "🧺" : id === "iron-only" ? "👔" : "✨";
+  const icon =
+    id === "wash-fold" ? <LaundryBasketIcon small /> : id === "iron-only" ? <ShirtIcon /> : <SparkleIcon />;
 
   return (
-    <span className="h-11 w-11 min-w-11 rounded-2xl bg-gradient-to-br from-emerald-50 to-amber-50 border border-stone-200 flex items-center justify-center text-xl shadow-sm">
+    <span className="h-12 w-12 min-w-12 rounded-2xl bg-gradient-to-br from-emerald-50 to-amber-50 border border-stone-200 flex items-center justify-center text-emerald-700 shadow-sm">
       {icon}
     </span>
   );
@@ -1287,7 +1278,10 @@ function StepButtons({ onBack, onNext }: { onBack?: () => void; onNext?: () => v
       )}
 
       {onNext && (
-        <button onClick={onNext} className="bg-emerald-700 hover:bg-emerald-800 active:scale-[0.98] transition text-white rounded-2xl py-4 font-black text-lg shadow-lg">
+        <button
+          onClick={onNext}
+          className="bg-emerald-700 hover:bg-emerald-800 active:scale-[0.98] transition text-white rounded-2xl py-4 font-black text-lg shadow-lg"
+        >
           Continue
         </button>
       )}
@@ -1343,7 +1337,9 @@ function TabButton({ label, active, onClick }: { label: string; active: boolean;
     <button
       onClick={onClick}
       className={`rounded-2xl py-3 text-sm font-black transition ${
-        active ? "bg-gradient-to-r from-emerald-800 to-teal-700 text-white shadow-lg" : "bg-white/80 text-slate-500 border border-stone-200"
+        active
+          ? "bg-gradient-to-r from-emerald-800 to-teal-700 text-white shadow-lg"
+          : "bg-white/80 text-slate-500 border border-stone-200"
       }`}
     >
       {label}
@@ -1404,5 +1400,69 @@ function DashboardCard({ label, value }: { label: string; value: string }) {
       <p className="text-xs text-slate-500 font-black uppercase tracking-[0.12em]">{label}</p>
       <p className="text-xl font-black mt-1 text-slate-950">{value}</p>
     </div>
+  );
+}
+
+function CardIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2">
+      <rect x="4" y="7" width="16" height="10" rx="2" />
+      <path d="M4 10h16M7 15h4" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function ChatIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2">
+      <path
+        d="M21 11.5a8.5 8.5 0 01-12.4 7.6L4 20l.9-4.5A8.5 8.5 0 1121 11.5z"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path d="M9 12h.01M12 12h.01M15 12h.01" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function PinIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2">
+      <path
+        d="M12 21s7-4.4 7-11a7 7 0 10-14 0c0 6.6 7 11 7 11z"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <circle cx="12" cy="10" r="2.5" />
+    </svg>
+  );
+}
+
+function LaundryBasketIcon({ small = false }: { small?: boolean }) {
+  return (
+    <svg viewBox="0 0 24 24" className={small ? "h-6 w-6" : "h-12 w-12"} fill="none" stroke="currentColor" strokeWidth="2">
+      <path d="M5 9h14l-1.2 10H6.2L5 9z" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M9 9l3-5 3 5M8 13h8M9 16h6" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function ShirtIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2">
+      <path d="M8 4l4 2 4-2 4 4-3 3v9H7v-9L4 8l4-4z" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function SparkleIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2">
+      <path
+        d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3zM18 16l.9 2.1L21 19l-2.1.9L18 22l-.9-2.1L15 19l2.1-.9L18 16z"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
   );
 }
