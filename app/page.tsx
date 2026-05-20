@@ -1,6 +1,6 @@
 "use client";
 
-import { type ReactNode, useEffect, useMemo, useState } from "react";
+import { type CSSProperties, useEffect, useMemo, useState } from "react";
 import { auth, db } from "./firebase";
 import {
   addDoc,
@@ -1011,6 +1011,23 @@ export default function LaundryYaluApp() {
           )}
         </section>
       </div>
+
+      <style jsx global>{`
+        @keyframes lyTrustFloat {
+          0%, 100% {
+            transform: translateY(0);
+            box-shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
+          }
+          50% {
+            transform: translateY(-4px);
+            box-shadow: 0 24px 56px rgba(15, 23, 42, 0.12);
+          }
+        }
+
+        .ly-trust-card {
+          animation: lyTrustFloat 5.5s ease-in-out infinite;
+        }
+      `}</style>
     </main>
   );
 }
@@ -1072,36 +1089,37 @@ function IntroFeatureSection() {
       <div className="relative z-10">
         <p className="text-slate-400 font-black text-lg">Hi there! 👋</p>
 
-        <h2 className="text-[2.45rem] leading-[1.02] font-black tracking-[-0.05em] mt-2 text-slate-950">
+        <h2 className="text-[2.35rem] leading-[1.02] font-black tracking-[-0.05em] mt-2 text-slate-950">
           Fresh clothes,
           <br />
           zero hassle.
         </h2>
 
-        <div className="mt-6 -mx-5 overflow-x-auto px-5 pb-4">
-          <div className="flex gap-4 w-max">
-            <FeatureCard
-              variant="pay"
-              title="Pay after confirmation"
-              body="No upfront payment. Pay only when your pickup is confirmed."
-            />
-            <FeatureCard
-              variant="chat"
-              title="Friendly WhatsApp support"
-              body="Real person. Real help. We are here for your laundry questions."
-            />
-            <FeatureCard
-              variant="live"
-              title="Live order status"
-              body="Track pickup, washing, ironing, and delivery step by step."
-            />
-          </div>
+        <div className="mt-6 grid gap-3">
+          <FeatureCard
+            variant="pay"
+            title="Pay after confirmation"
+            body="No upfront payment until pickup is confirmed."
+            delay="0s"
+          />
+          <FeatureCard
+            variant="chat"
+            title="Friendly WhatsApp support"
+            body="Talk to a real person whenever you need help."
+            delay="0.7s"
+          />
+          <FeatureCard
+            variant="live"
+            title="Live order status"
+            body="Track pickup, cleaning, ironing, and delivery."
+            delay="1.4s"
+          />
         </div>
 
-        <div className="mt-4 relative overflow-hidden rounded-[2rem] bg-[linear-gradient(135deg,#064e3b_0%,#0f766e_58%,#0f3d35_100%)] text-white p-5 shadow-2xl">
+        <div className="mt-5 relative overflow-hidden rounded-[2rem] bg-[linear-gradient(135deg,#064e3b_0%,#0f766e_58%,#0f3d35_100%)] text-white p-5 shadow-2xl">
           <div className="absolute -right-10 -bottom-12 h-40 w-40 rounded-full bg-white/10 blur-2xl" />
           <div className="absolute right-5 top-5 h-16 w-16 rounded-full bg-white/10 border border-white/15 flex items-center justify-center">
-            <span className="text-2xl">→</span>
+            <LaundryBasketIcon small />
           </div>
 
           <div className="relative z-10 max-w-[15rem]">
@@ -1118,8 +1136,8 @@ function IntroFeatureSection() {
             </p>
           </div>
 
-          <div className="absolute right-5 bottom-3 text-white/80">
-            <LaundryBasketIcon />
+          <div className="absolute right-5 bottom-3 text-white/70">
+            <SparkleIcon />
           </div>
         </div>
       </div>
@@ -1131,20 +1149,22 @@ function FeatureCard({
   title,
   body,
   variant,
+  delay,
 }: {
   title: string;
   body: string;
   variant: "pay" | "chat" | "live";
+  delay: string;
 }) {
   const isPay = variant === "pay";
   const isChat = variant === "chat";
   const isLive = variant === "live";
 
   const cardStyle = isPay
-    ? "from-emerald-50 via-white to-white border-emerald-100 text-emerald-700"
+    ? "from-emerald-50 via-white to-white border-emerald-100"
     : isChat
-      ? "from-lime-50 via-white to-white border-lime-100 text-green-600"
-      : "from-orange-50 via-white to-white border-orange-100 text-orange-500";
+      ? "from-lime-50 via-white to-white border-lime-100"
+      : "from-orange-50 via-white to-white border-orange-100";
 
   const iconCircle = isPay
     ? "bg-gradient-to-br from-emerald-500 to-teal-500"
@@ -1152,45 +1172,47 @@ function FeatureCard({
       ? "bg-gradient-to-br from-green-500 to-lime-400"
       : "bg-gradient-to-br from-orange-400 to-amber-500";
 
-  const arrowCircle = isPay
-    ? "bg-gradient-to-br from-teal-500 to-emerald-600"
+  const glow = isPay
+    ? "bg-emerald-200/40"
     : isChat
-      ? "bg-gradient-to-br from-lime-300 to-lime-500 text-slate-950"
-      : "bg-gradient-to-br from-orange-400 to-orange-500";
+      ? "bg-lime-200/45"
+      : "bg-orange-200/45";
 
   return (
     <div
-      className={`relative w-[15.8rem] min-h-[16.5rem] shrink-0 rounded-[2rem] border bg-gradient-to-br ${cardStyle} p-5 shadow-[0_22px_55px_rgba(15,23,42,0.10)] overflow-hidden active:scale-[0.985] transition`}
+      className={`ly-trust-card relative rounded-[1.7rem] border bg-gradient-to-br ${cardStyle} p-4 shadow-[0_18px_45px_rgba(15,23,42,0.08)] overflow-hidden`}
+      style={{ animationDelay: delay } as CSSProperties}
     >
-      <div className="absolute -right-12 -top-12 h-32 w-32 rounded-full bg-white/80 blur-2xl" />
-      <div className="absolute left-4 top-4 h-24 w-24 rounded-full bg-white/55 blur-xl" />
+      <div className={`absolute -right-10 -top-12 h-28 w-28 rounded-full ${glow} blur-2xl`} />
+      <div className="absolute inset-x-5 top-0 h-px bg-gradient-to-r from-transparent via-white to-transparent" />
 
-      {isLive && (
-        <div className="absolute right-4 top-4 rounded-full bg-orange-100 text-orange-600 px-3 py-1 text-[10px] font-black">
-          LIVE
-        </div>
-      )}
-
-      <div className="relative z-10">
-        <div className="relative h-20 w-20 rounded-[1.7rem] bg-white/80 border border-white shadow-[0_18px_38px_rgba(15,23,42,0.10)] flex items-center justify-center">
-          <div className={`h-12 w-12 rounded-2xl ${iconCircle} text-white flex items-center justify-center shadow-lg`}>
+      <div className="relative z-10 flex items-center gap-4">
+        <div className="relative h-14 w-14 min-w-14 rounded-[1.25rem] bg-white/80 border border-white shadow-[0_14px_30px_rgba(15,23,42,0.09)] flex items-center justify-center">
+          <span className={`h-9 w-9 rounded-2xl ${iconCircle} text-white flex items-center justify-center shadow-lg`}>
             {isPay && <CardIcon />}
             {isChat && <ChatIcon />}
             {isLive && <PinIcon />}
+          </span>
+
+          <span className="absolute -right-1 -bottom-1 h-4 w-4 rounded-full bg-white border border-white shadow-sm flex items-center justify-center">
+            <span className={`h-2 w-2 rounded-full ${isLive ? "bg-orange-500" : isChat ? "bg-lime-500" : "bg-emerald-500"}`} />
+          </span>
+        </div>
+
+        <div className="min-w-0">
+          <h3 className="text-[0.95rem] leading-tight font-black tracking-[-0.02em] text-slate-950">
+            {title}
+          </h3>
+          <p className="text-xs leading-relaxed text-slate-500 mt-1">
+            {body}
+          </p>
+        </div>
+
+        {isLive && (
+          <div className="ml-auto rounded-full bg-orange-100 text-orange-600 px-2.5 py-1 text-[9px] font-black">
+            LIVE
           </div>
-        </div>
-
-        <h3 className="text-[1.25rem] leading-[1.08] font-black tracking-[-0.03em] text-slate-950 mt-7">
-          {title}
-        </h3>
-
-        <p className="text-sm leading-relaxed text-slate-500 mt-3">
-          {body}
-        </p>
-
-        <div className={`absolute right-0 bottom-0 h-11 w-11 rounded-full ${arrowCircle} text-white flex items-center justify-center text-xl font-black shadow-xl`}>
-          →
-        </div>
+        )}
       </div>
     </div>
   );
