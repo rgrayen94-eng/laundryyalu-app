@@ -1,6 +1,6 @@
 "use client";
 
-import { type CSSProperties, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { auth, db } from "./firebase";
 import {
   addDoc,
@@ -1013,19 +1013,38 @@ export default function LaundryYaluApp() {
       </div>
 
       <style jsx global>{`
-        @keyframes lyTrustFloat {
-          0%, 100% {
-            transform: translateY(0);
-            box-shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
+        @keyframes lyCardShine {
+          0% {
+            transform: translateX(-160%) skewX(-18deg);
+            opacity: 0;
           }
-          50% {
-            transform: translateY(-4px);
-            box-shadow: 0 24px 56px rgba(15, 23, 42, 0.12);
+          22% {
+            opacity: 0.85;
+          }
+          46% {
+            transform: translateX(360%) skewX(-18deg);
+            opacity: 0;
+          }
+          100% {
+            transform: translateX(360%) skewX(-18deg);
+            opacity: 0;
           }
         }
 
         .ly-trust-card {
-          animation: lyTrustFloat 5.5s ease-in-out infinite;
+          transform: translateZ(0);
+        }
+
+        .ly-card-shine {
+          animation: lyCardShine 6.8s ease-in-out infinite;
+        }
+
+        .ly-trust-card:nth-child(2) .ly-card-shine {
+          animation-delay: 1.1s;
+        }
+
+        .ly-trust-card:nth-child(3) .ly-card-shine {
+          animation-delay: 2.2s;
         }
       `}</style>
     </main>
@@ -1102,19 +1121,16 @@ function IntroFeatureSection() {
             variant="pay"
             title="Pay after confirmation"
             body="No upfront payment until pickup is confirmed."
-            delay="0s"
           />
           <FeatureCard
             variant="chat"
             title="Friendly WhatsApp support"
             body="Talk to a real person whenever you need help."
-            delay="0.7s"
           />
           <FeatureCard
             variant="live"
             title="Live order status"
             body="Track pickup, cleaning, ironing, and delivery."
-            delay="1.4s"
           />
         </div>
 
@@ -1151,12 +1167,10 @@ function FeatureCard({
   title,
   body,
   variant,
-  delay,
 }: {
   title: string;
   body: string;
   variant: "pay" | "chat" | "live";
-  delay: string;
 }) {
   const isPay = variant === "pay";
   const isChat = variant === "chat";
@@ -1183,9 +1197,9 @@ function FeatureCard({
   return (
     <div
       className={`ly-trust-card relative rounded-[1.7rem] border bg-gradient-to-br ${cardStyle} p-4 shadow-[0_18px_45px_rgba(15,23,42,0.08)] overflow-hidden`}
-      style={{ animationDelay: delay } as CSSProperties}
     >
       <div className={`absolute -right-10 -top-12 h-28 w-28 rounded-full ${glow} blur-2xl`} />
+      <div className="ly-card-shine absolute inset-y-0 -left-1/2 w-1/2 bg-gradient-to-r from-transparent via-white/65 to-transparent skew-x-[-18deg]" />
       <div className="absolute inset-x-5 top-0 h-px bg-gradient-to-r from-transparent via-white to-transparent" />
 
       <div className="relative z-10 flex items-center gap-4">
